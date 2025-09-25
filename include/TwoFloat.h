@@ -220,11 +220,10 @@ public:
   constexpr T & hi() { return mhi;}
   constexpr T & lo() { return mlo;}
 
+private:
 
   T mhi;
   T mlo;
-
-  // friend ostream& operator<<(ostream&, TwoFloat&);
 
 };
 
@@ -309,11 +308,11 @@ template<typename T>
 inline constexpr double toDouble(T a) { return a;}
 
 
-
 /*
 template<>
 inline constexpr __float128  toSingle<__float128>(__float128 a) { return a;}
 */
+
 
 template<typename T>
 inline constexpr T toSingle(TwoFloat<T> const & a) { return a.hi();}
@@ -323,7 +322,7 @@ inline constexpr double toDouble(TwoFloat<T> const & a) { return double(a.hi())+
 
 
 
-#ifdef MORE_PREC
+#ifdef TWOFLOAT_PRECISE_SUM
 #warning "FP2_PREC ON"
 // Algorithm 6 from https://hal.science/hal-01351529
 template<typename T>
@@ -400,7 +399,7 @@ template<typename T>
 inline constexpr TwoFloat<T> operator*(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret;
-#ifdef MORE_PREC_MULT
+#ifdef TWOFLOAT_PRECISE_MULT
   a_mul(ret.hi(),ret.lo(),a.hi(),b.hi());
   auto t0 =  a.lo() * b.lo();
   auto t1 =   std::fma(a.hi(),b.lo(),t0); 
@@ -433,7 +432,7 @@ template<typename T>
 #endif
 inline constexpr TwoFloat<T> operator/(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
-#ifdef MORE_PREC_DIV
+#ifdef TWOFLOAT_PRECISE_DIV
   auto t = T(1.)/b.hi();
   auto rh = std::fma(-b.hi(),t,T(1.));
   auto rl= -b.lo()*t;
@@ -459,7 +458,7 @@ template<typename T>
 #endif
 inline constexpr TwoFloat<T> operator/(T a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
-#ifdef MORE_PREC_DIV
+#ifdef TWOFLOAT_PRECISE_DIV
   auto t = T(1.)/b.hi();
   auto rh = std::fma(-b.hi(),t,T(1.));
   auto rl= -b.lo()*t;
