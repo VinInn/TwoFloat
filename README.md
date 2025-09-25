@@ -1,0 +1,8 @@
+# TwoFloat
+An implementation of DoubleWord Arithmetic as a simple C++ templated class.
+
+It implements algorithms from
+. Mioara Maria Joldes, Jean-Michel Muller, Valentina Popescu. Tight and rigorous error bounds for basic building blocks of double-word arithmetic. ACM Transactions on Mathematical Software, 2017, 44 (2), pp.1 - 27. .10.1145/3121432.. https://hal.science/hal-01351529v3
+. Vincent Lefèvre, Nicolas Louvet, Jean-Michel Muller, Joris Picot, Laurence Rideau. Accurate Calculation of Euclidean Norms using Double-Word Arithmetic.  ACM Transactions on Mathematical Software, 2023, 49.  https://hal.science/hal-03482567
+. S. M. Rump and M. Lange. Faithfully Rounded Floating-Point Computation. ACM Transactions on Mathematical Software, 46(3):1–20, jul 2020. https://www.tuhh.de/ti3/paper/rump/LaRu2017b.pdf
+
