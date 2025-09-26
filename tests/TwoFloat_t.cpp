@@ -31,6 +31,28 @@ int main() {
     s+=b;
     std::cout << std::hexfloat << s << std::endl;
     std::cout << std::endl;
+
+    std::cout <<"conversions"<< std::endl;
+    FF q = sqrt(2.);; std::cout << q << std::endl;
+    q+= 1.e-8; std::cout << q << std::endl;;
+    q+=1; std::cout << q << std::endl;
+    q-=1; std::cout << q << std::endl;
+    q*=2; std::cout << q << std::endl;
+    q/=2; std::cout << q << std::endl;
+    { auto w = q + 1.f; std::cout << w << std::endl;}
+#ifdef TEST_INVALID
+    { auto w = q + 1.; std::cout << w << std::endl;}
+    { auto w = 1 + q; std::cout << w << std::endl;}
+    { auto w = q - 1.; std::cout << w << std::endl;}
+    { auto w = 1 - q; std::cout << w << std::endl;}
+    { auto w = q*2; std::cout << w << std::endl;}
+    { auto w = 2*q; std::cout << w << std::endl;}
+    { auto w = q/2; std::cout << w << std::endl;}
+    { auto w = 2/q; std::cout << w << std::endl;}
+#endif
+    double ww = q; std::cout << ww << std::endl;
+
+    std::cout << std::endl;
     std::cout <<"squared norm"<< std::endl;
 
     float v[4] = {2.f,1.e-4,1.e-4,2.f};
