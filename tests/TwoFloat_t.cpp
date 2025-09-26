@@ -32,7 +32,7 @@ int main() {
     std::cout << std::hexfloat << s << std::endl;
     std::cout << std::endl;
 
-    std::cout <<"conversions"<< std::endl;
+    std::cout <<"conversions ok"<< std::endl;
     FF q = sqrt(2.);; std::cout << q << std::endl;
     q+= 1.e-8; std::cout << q << std::endl;;
     q+=1; std::cout << q << std::endl;
@@ -40,7 +40,9 @@ int main() {
     q*=2; std::cout << q << std::endl;
     q/=2; std::cout << q << std::endl;
     { auto w = q + 1.f; std::cout << w << std::endl;}
+    {double ww = q; std::cout << ww << std::endl;}
 #ifdef TEST_INVALID
+    std::cout <<"conversions problematic"<< std::endl;
     { auto w = q + 1.; std::cout << w << std::endl;}
     { auto w = 1 + q; std::cout << w << std::endl;}
     { auto w = q - 1.; std::cout << w << std::endl;}
@@ -50,7 +52,6 @@ int main() {
     { auto w = q/2; std::cout << w << std::endl;}
     { auto w = 2/q; std::cout << w << std::endl;}
 #endif
-    double ww = q; std::cout << ww << std::endl;
 
     std::cout << std::endl;
     std::cout <<"squared norm"<< std::endl;
@@ -154,8 +155,8 @@ int main() {
 {
   std::cout << "sqrt" << std::endl;
   auto mf =  sqrt(f1);
-  auto md = std::sqrt(d1);
-  std::cout << std::hexfloat << std::sqrt(f1.hi()) << std::endl;
+  auto md =  sqrt(d1);
+  std::cout << std::hexfloat << sqrt(f1.hi()) << std::endl;
   std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
   std::cout << std::hexfloat << double(mf.hi()) + double(mf.lo()) << std::endl;
   std::cout << std::hexfloat << md << std::endl;
