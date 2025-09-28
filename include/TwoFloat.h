@@ -5,6 +5,9 @@
 #include <algorithm>
 #include<cassert>
 #include<ostream>
+#if defined(__x86_64__)
+#include <x86intrin.h>
+#endif
 
 namespace detailsTwoFloat {
 
@@ -682,6 +685,43 @@ constexpr TwoFloat<T> & TwoFloat<T>::operator/=(T  a) {
    return *this;
 }
 
+
+template<std::floating_point T>
+#ifdef __NVCC__
+     __device__ __host__
+#endif
+inline
+constexpr T rsqrt(T a) {
+   return T(1)/std::sqrt(a);
+} 
+
+template<typename T>
+#ifdef __NVCC__
+     __device__ __host__
+#endif
+inline
+constexpr TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
+  if constexpr (std::is_same_v<T,float>) {
+#if defined(__x86_64__)
+   auto x = a.hi();
+   float r;
+   _mm_store_ss( &r, _mm_rsqrt_ss( _mm_load_ss( &x ) ) );
+   // standard one NR iteration
+   r =  r * (1.5f - 0.5f * x * (r * r));
+   float rx = r*x;
+   drx = std::fma(r, x, -rx);
+   float h = std::fma(r,rx,-1.0f) + r*drx;
+   auto dr = (0.5f*r)*h;
+   dr += (0.5f*r)*(r*r)*a.lo();
+   return {r,-dr,fromSum()};
+#else
+   return T(1)/sqrt(a);
+#endif
+  } else {
+    return T(1)/sqrt(a);
+  }
+
+}
 
 
 //  Algorithm 10 from https://hal.science/hal-03482567

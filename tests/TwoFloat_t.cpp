@@ -167,5 +167,17 @@ int main() {
 
 }
 
+
+{
+  std::cout << "rsqrt" << std::endl;
+  auto mf =  rsqrt(f1);
+  auto md =  rsqrt(d1);
+  std::cout << std::hexfloat << sqrt(f1.hi()) << std::endl;
+  std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
+  std::cout << std::hexfloat << double(mf.hi()) + double(mf.lo()) << std::endl;
+  std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) << std::endl;
+
+}
+
   return 0;
 }
