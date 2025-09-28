@@ -216,7 +216,7 @@ public:
       a_mul(mhi,mlo,a,b);
     } else if constexpr (Tag::value()==From::div) {
       a_div(mhi,mlo,a,b);
-    } else static_assert(false,"Tag not valid");
+    } // else static_assert(false,"Tag not valid");
   }
 
 
@@ -701,6 +701,7 @@ template<typename T>
 #endif
 inline
 constexpr TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
+  using namespace detailsTwoFloat;
   if constexpr (std::is_same_v<T,float>) {
 #if defined(__x86_64__)
    auto x = a.hi();
@@ -709,7 +710,7 @@ constexpr TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
    // standard one NR iteration
    r =  r * (1.5f - 0.5f * x * (r * r));
    float rx = r*x;
-   drx = std::fma(r, x, -rx);
+   auto drx = std::fma(r, x, -rx);
    float h = std::fma(r,rx,-1.0f) + r*drx;
    auto dr = (0.5f*r)*h;
    dr += (0.5f*r)*(r*r)*a.lo();
