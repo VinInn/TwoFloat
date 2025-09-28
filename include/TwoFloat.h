@@ -140,7 +140,7 @@ inline constexpr void s_div(T& hi, T& lo, T ah, T al, T b) {
   hi = t;
 }
 
-   enum class From { members, fastsum, sum, prod, div };
+   enum class From { members, fastsum, sum, prod, div, fdouble };
 
    template<From from>
    struct Tag {
@@ -153,6 +153,7 @@ inline constexpr void s_div(T& hi, T& lo, T ah, T al, T b) {
    constexpr auto fromSum()  { return Tag<From::sum>();}
    constexpr auto fromProd()  { return Tag<From::prod>();}
    constexpr auto fromDiv()  { return Tag<From::div>();}
+   constexpr auto fromDouble()  { return Tag<From::fdouble>();}
 
 }
 
@@ -175,7 +176,25 @@ public:
 #ifdef __NVCC__
      __device__ __host__
 #endif
-  /*explicit*/ constexpr operator T() const { return mhi;}
+  explicit constexpr operator T() const { return mhi;}
+
+
+  template<std::floating_point D, detailsTwoFloat::From f, 
+           typename = typename std::enable_if_t<detailsTwoFloat::Tag<f>::value()==detailsTwoFloat::From::fdouble>>
+#ifdef __NVCC__
+     __device__ __host__
+#endif
+  constexpr TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-mhi) {}
+/*
+    using namespace detailsTwoFloat;
+
+    using Tag = detailsTwoFloat::Tag<f>;
+    if constexpr (Tag::value()==From::fdouble) {
+
+    } else static_assert(false,"Tag not valid");
+
+  }
+*/
 
   template<detailsTwoFloat::From f>
 #ifdef __NVCC__
@@ -194,7 +213,7 @@ public:
       a_mul(mhi,mlo,a,b);
     } else if constexpr (Tag::value()==From::div) {
       a_div(mhi,mlo,a,b);
-    }
+    } else static_assert(false,"Tag not valid");
   }
 
 
