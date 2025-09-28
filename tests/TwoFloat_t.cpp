@@ -1,5 +1,7 @@
 #include "TwoFloat.h"
+#include "ulpDiff.h"
 #include <iostream>
+
 
 int main() {
 
@@ -113,7 +115,7 @@ int main() {
   auto md = d1 * f2.hi();
   std::cout << std::hexfloat << f1.hi()*f2.hi() << std::endl;
   std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
-  std::cout << std::hexfloat << md << std::endl;
+  std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) << std::endl;
 }
 {
   auto mf =  f1*f2;
@@ -121,7 +123,7 @@ int main() {
   std::cout << std::hexfloat << f1.hi()*f2.hi() << std::endl;
   std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
   std::cout << std::hexfloat << double(mf.hi()) + double(mf.lo()) << std::endl;
-  std::cout << std::hexfloat << md << std::endl;
+  std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) << std::endl;
 }
 
 
@@ -139,7 +141,7 @@ int main() {
   std::cout << std::hexfloat << f1.hi()/f2.hi() << std::endl;
   std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
   std::cout << std::hexfloat << double(mf.hi()) + double(mf.lo()) << std::endl;
-  std::cout << std::hexfloat << md << std::endl;
+  std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) <<std::endl;
 }
 
 {
@@ -151,7 +153,7 @@ int main() {
   std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
   std::cout << std::hexfloat << mf2.hi() << ',' << mf2.lo() << std::endl;
   std::cout << std::hexfloat << double(mf.hi()) + double(mf.lo()) << std::endl;
-  std::cout << std::hexfloat << md << std::endl;
+  std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) << std::endl;
 }
 
 {
@@ -161,7 +163,8 @@ int main() {
   std::cout << std::hexfloat << sqrt(f1.hi()) << std::endl;
   std::cout << std::hexfloat << mf.hi() << ',' << mf.lo() << std::endl;
   std::cout << std::hexfloat << double(mf.hi()) + double(mf.lo()) << std::endl;
-  std::cout << std::hexfloat << md << std::endl;
+  std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) << std::endl;
+
 }
 
   return 0;
