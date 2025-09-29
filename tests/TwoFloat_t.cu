@@ -121,7 +121,7 @@ void kgo(int k) {
 
 #include <iostream>
 int main(){
-  for (int k=0; k<8; ++k) {
+  for (int k=0; k<9; ++k) {
     std::cout << "on GPU" << std::endl;
     kgo<<<1,1,0,0>>>(k);
     cudaDeviceSynchronize();

@@ -16,6 +16,14 @@ constexpr bool onX86 = false;
 constexpr bool onX86 = false;
 #endif
 
+
+#ifdef __NVCC__
+#define TWOFLOAT_INLINE __device__ __host__ inline constexpr 
+#else
+#define TWOFLOAT_INLINE inline constexpr
+#endif
+
+
 namespace detailsTwoFloat {
 
 // imported from https://gitlab.inria.fr/core-math/core-math/-/blob/master/src/binary64/pow/pow.h
@@ -31,10 +39,7 @@ namespace detailsTwoFloat {
        (see https://hal.inria.fr/hal-03798376)
    We also have |lo| < ulp(hi). */
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void fast_two_sum(T& hi, T& lo, T a, T b) {
+TWOFLOAT_INLINE void fast_two_sum(T& hi, T& lo, T a, T b) {
   T e;
 
 //  assert (a == 0 || std::abs (a) >= std::abs (b));
@@ -45,10 +50,7 @@ inline constexpr void fast_two_sum(T& hi, T& lo, T a, T b) {
 
 /* Algorithm 2 from https://hal.science/hal-01351529 */
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void two_sum (T& s, T& t, T a, T b)
+TWOFLOAT_INLINE void two_sum (T& s, T& t, T a, T b)
 {
   s = a + b;
   T a_prime = s - b;
@@ -60,10 +62,7 @@ inline constexpr void two_sum (T& s, T& t, T a, T b)
 
 // Add a + (bh + bl), assuming |a| >= |bh|
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void fast_sum(T& hi, T& lo, T a, T bh,
+TWOFLOAT_INLINE void fast_sum(T& hi, T& lo, T a, T bh,
                             T bl) {
   fast_two_sum(hi, lo, a, bh);
   /* |(a+bh)-(hi+lo)| <= 2^-105 |hi| and |lo| < ulp(hi) */
@@ -74,20 +73,14 @@ inline constexpr void fast_sum(T& hi, T& lo, T a, T bh,
 
 // Multiply exactly a and b, such that hi + lo = a * b.
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void a_mul(T& hi, T& lo, T a, T b) {
+TWOFLOAT_INLINE void a_mul(T& hi, T& lo, T a, T b) {
   hi = a * b;
   lo = std::fma (a, b, -hi);
 }
 
 // Multiply a T with a T T : a * (bh + bl)
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void s_mul (T& hi, T& lo, T a, T bh,
+TWOFLOAT_INLINE void s_mul (T& hi, T& lo, T a, T bh,
                           T bl) {
   T s;
 
@@ -99,10 +92,7 @@ inline constexpr void s_mul (T& hi, T& lo, T a, T bh,
 // Returns (ah + al) * (bh + bl) - (al * bl)
 // We can ignore al * bl when assuming al <= ulp(ah) and bl <= ulp(bh)
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void d_mul(T&hi, T&lo, T ah, T al,
+TWOFLOAT_INLINE void d_mul(T&hi, T&lo, T ah, T al,
                          T bh, T bl) {
   T s, t;
 
@@ -112,10 +102,7 @@ inline constexpr void d_mul(T&hi, T&lo, T ah, T al,
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void d_square(T& hi, T& lo, T ah, T al) {
+TWOFLOAT_INLINE void d_square(T& hi, T& lo, T ah, T al) {
   T s, b = al + al;
 
   a_mul(hi, s, ah, ah);
@@ -124,10 +111,7 @@ inline constexpr void d_square(T& hi, T& lo, T ah, T al) {
 
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void a_div(T& hi, T& lo, T a, T b) {
+TWOFLOAT_INLINE void a_div(T& hi, T& lo, T a, T b) {
   auto t = a/b;
   a_mul(hi,lo,t,b);
   auto d = a - hi;
@@ -137,10 +121,7 @@ inline constexpr void a_div(T& hi, T& lo, T a, T b) {
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr void s_div(T& hi, T& lo, T ah, T al, T b) {
+TWOFLOAT_INLINE void s_div(T& hi, T& lo, T ah, T al, T b) {
   auto t = ah/b;
   a_mul(hi,lo,t,b);
   auto d = ah - hi;
@@ -171,46 +152,19 @@ inline constexpr void s_div(T& hi, T& lo, T ah, T al, T b) {
 template<typename T>
 class TwoFloat {
 public:
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-  constexpr TwoFloat() = default;
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-  /*explicit*/ constexpr TwoFloat(T a) : mhi(a), mlo(0) {}
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-  constexpr TwoFloat & operator=(T a) { mhi=a; mlo=0; return *this;}
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-  explicit constexpr operator T() const { return mhi;}
+
+  TWOFLOAT_INLINE TwoFloat() = default;
+  TWOFLOAT_INLINE /*explicit*/ TwoFloat(T a) : mhi(a), mlo(0) {}
+  TWOFLOAT_INLINE TwoFloat & operator=(T a) { mhi=a; mlo=0; return *this;}
+  TWOFLOAT_INLINE explicit operator T() const { return mhi;}
 
 
   template<std::floating_point D, detailsTwoFloat::From f, 
            typename = typename std::enable_if_t<detailsTwoFloat::Tag<f>::value()==detailsTwoFloat::From::fdouble>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-  constexpr TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-mhi) {}
-/*
-    using namespace detailsTwoFloat;
-
-    using Tag = detailsTwoFloat::Tag<f>;
-    if constexpr (Tag::value()==From::fdouble) {
-
-    } else static_assert(false,"Tag not valid");
-
-  }
-*/
+  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-mhi) {}
 
   template<detailsTwoFloat::From f>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-  constexpr TwoFloat(T a, T b, detailsTwoFloat::Tag<f>) {
+  TWOFLOAT_INLINE TwoFloat(T a, T b, detailsTwoFloat::Tag<f>) {
     using namespace detailsTwoFloat;
     using Tag = detailsTwoFloat::Tag<f>;
     if constexpr (Tag::value()==From::members) {
@@ -227,28 +181,24 @@ public:
   }
 
 
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-//  constexpr TwoFloat operator-() const {  TwoFloat<T> ret(-mhi, -mlo, detailsTwoFloat::fromMembers()); return ret;}
-  constexpr TwoFloat operator-() const {  return TwoFloat<T>{-mhi, -mlo, detailsTwoFloat::fromMembers()};}
+  TWOFLOAT_INLINE TwoFloat operator-() const {  return {-mhi, -mlo, detailsTwoFloat::fromMembers()};}
 
 
-  constexpr TwoFloat & operator-=(TwoFloat<T> const & a);
-  constexpr TwoFloat & operator+=(TwoFloat<T> const & a);
-  constexpr TwoFloat & operator*=(TwoFloat<T> const & a);
-  constexpr TwoFloat & operator/=(TwoFloat<T> const & a);
+  TWOFLOAT_INLINE TwoFloat & operator-=(TwoFloat<T> const & a);
+  TWOFLOAT_INLINE TwoFloat & operator+=(TwoFloat<T> const & a);
+  TWOFLOAT_INLINE TwoFloat & operator*=(TwoFloat<T> const & a);
+  TWOFLOAT_INLINE TwoFloat & operator/=(TwoFloat<T> const & a);
 
-  constexpr TwoFloat & operator-=(T a);
-  constexpr TwoFloat & operator+=(T a);
-  constexpr TwoFloat & operator*=(T  a);
-  constexpr TwoFloat & operator/=(T  a);
+  TWOFLOAT_INLINE TwoFloat & operator-=(T a);
+  TWOFLOAT_INLINE TwoFloat & operator+=(T a);
+  TWOFLOAT_INLINE TwoFloat & operator*=(T  a);
+  TWOFLOAT_INLINE TwoFloat & operator/=(T  a);
 
 
-  constexpr T hi() const { return mhi;}
-  constexpr T lo() const { return mlo;}
-  constexpr T & hi() { return mhi;}
-  constexpr T & lo() { return mlo;}
+  TWOFLOAT_INLINE T hi() const { return mhi;}
+  TWOFLOAT_INLINE T lo() const { return mlo;}
+  TWOFLOAT_INLINE T & hi() { return mhi;}
+  TWOFLOAT_INLINE T & lo() { return mlo;}
 
 private:
 
@@ -266,10 +216,7 @@ std::ostream& operator<<(std::ostream& os, TwoFloat<T> const & t)
 
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator+(TwoFloat<T> const & a, T b) {
+TWOFLOAT_INLINE TwoFloat<T> operator+(TwoFloat<T> const & a, T b) {
   // static_assert( std::is_same<T, U>() );
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(b,a.hi(),fromSum());
@@ -280,19 +227,13 @@ inline constexpr TwoFloat<T> operator+(TwoFloat<T> const & a, T b) {
 
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator+(T b, TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> operator+(T b, TwoFloat<T> const & a) {
   return a+b;
 }
 
 template<typename T>
 // , typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator-(TwoFloat<T> const & a, T b) {
+TWOFLOAT_INLINE TwoFloat<T> operator-(TwoFloat<T> const & a, T b) {
   // static_assert( std::is_same<T, U>() );
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(-b,a.hi(),fromSum());
@@ -303,10 +244,7 @@ inline constexpr TwoFloat<T> operator-(TwoFloat<T> const & a, T b) {
 
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator-(T b, TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> operator-(T b, TwoFloat<T> const & a) {
   // static_assert( std::is_same<T, U>() );
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(b,-a.hi(),fromSum());
@@ -320,10 +258,7 @@ inline constexpr TwoFloat<T> operator-(T b, TwoFloat<T> const & a) {
 /* Algorithm 3 from https://hal.science/hal-01351529 */
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator*(TwoFloat<T> const & a, T b) {
+TWOFLOAT_INLINE TwoFloat<T> operator*(TwoFloat<T> const & a, T b) {
   // static_assert( std::is_same<T, U>() );
   using namespace detailsTwoFloat;
   TwoFloat<T> ret;
@@ -333,32 +268,29 @@ inline constexpr TwoFloat<T> operator*(TwoFloat<T> const & a, T b) {
 
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator*(T b, TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> operator*(T b, TwoFloat<T> const & a) {
   // static_assert( std::is_same<T, U>() );
   return a*b;
 }
 
 template<typename T>
-inline constexpr T toSingle(T a) { return a;}
+TWOFLOAT_INLINE T toSingle(T a) { return a;}
 
 template<typename T>
-inline constexpr double toDouble(T a) { return a;}
+TWOFLOAT_INLINE double toDouble(T a) { return a;}
 
 
 /*
 template<>
-inline constexpr __float128  toSingle<__float128>(__float128 a) { return a;}
+TWOFLOAT_INLINE __float128  toSingle<__float128>(__float128 a) { return a;}
 */
 
 
 template<typename T>
-inline constexpr T toSingle(TwoFloat<T> const & a) { return a.hi();}
+TWOFLOAT_INLINE T toSingle(TwoFloat<T> const & a) { return a.hi();}
 
 template<typename T>
-inline constexpr double toDouble(TwoFloat<T> const & a) { return double(a.hi())+double(a.lo());}
+TWOFLOAT_INLINE double toDouble(TwoFloat<T> const & a) { return double(a.hi())+double(a.lo());}
 
 
 
@@ -366,10 +298,7 @@ inline constexpr double toDouble(TwoFloat<T> const & a) { return double(a.hi())+
 #warning "FP2_PREC ON"
 // Algorithm 6 from https://hal.science/hal-01351529
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator+(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator+(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(a.hi(), b.hi(),fromSum());
   TwoFloat<T> t(a.lo(), b.lo(),fromSum());
@@ -380,10 +309,7 @@ inline constexpr TwoFloat<T> operator+(TwoFloat<T> const & a, TwoFloat<T> const 
   return ret;
 }
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator-(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator-(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(a.hi(), -b.hi(),fromSum());
   TwoFloat<T> t(a.lo(), -b.lo(),fromSum());
@@ -396,10 +322,7 @@ inline constexpr TwoFloat<T> operator-(TwoFloat<T> const & a, TwoFloat<T> const 
 #else
 // Algorithm 5 from https://hal.science/hal-01351529
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator+(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator+(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(a.hi(), b.hi(),fromSum());
   auto u = a.lo() + b.lo();
@@ -413,10 +336,7 @@ inline constexpr TwoFloat<T> operator+(TwoFloat<T> const & a, TwoFloat<T> const 
   return ret;
 }
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator-(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator-(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret(a.hi(), -b.hi(),fromSum());
   auto u = a.lo() - b.lo();
@@ -433,10 +353,7 @@ inline constexpr TwoFloat<T> operator-(TwoFloat<T> const & a, TwoFloat<T> const 
 
 /* Algorithm 11  from https://hal.science/hal-01351529 */
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator*(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator*(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret;
 #ifdef TWOFLOAT_PRECISE_MULT
@@ -456,10 +373,7 @@ inline constexpr TwoFloat<T> operator*(TwoFloat<T> const & a, TwoFloat<T> const 
 /* Algorithm 15 from https://hal.science/hal-01351529 */
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator/(TwoFloat<T> const & a, T b) {
+TWOFLOAT_INLINE TwoFloat<T> operator/(TwoFloat<T> const & a, T b) {
   // static_assert( std::is_same<T, U>() );
   using namespace detailsTwoFloat;
   TwoFloat<T> ret;
@@ -469,10 +383,7 @@ inline constexpr TwoFloat<T> operator/(TwoFloat<T> const & a, T b) {
 
 /* Algorithm 17  from https://hal.science/hal-01351529 */
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator/(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator/(TwoFloat<T> const & a, TwoFloat<T> const & b) {
   using namespace detailsTwoFloat;
 #ifdef TWOFLOAT_PRECISE_DIV
   auto t = T(1.)/b.hi();
@@ -496,10 +407,7 @@ inline constexpr TwoFloat<T> operator/(TwoFloat<T> const & a, TwoFloat<T> const 
 
 template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> operator/(T a, TwoFloat<T> const & b) {
+TWOFLOAT_INLINE TwoFloat<T> operator/(T a, TwoFloat<T> const & b) {
   // static_assert( std::is_same<T, U>() );
   using namespace detailsTwoFloat;
 #ifdef TWOFLOAT_PRECISE_DIV
@@ -523,10 +431,7 @@ inline constexpr TwoFloat<T> operator/(T a, TwoFloat<T> const & b) {
 
 
 template<std::floating_point T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr T sqrt(T a) {
+TWOFLOAT_INLINE T sqrt(T a) {
    static_assert(std::is_floating_point_v<T>);
    return std::sqrt(a);
 }
@@ -534,10 +439,7 @@ inline constexpr T sqrt(T a) {
 
 //  Algorithm 6 from https://hal.science/hal-03482567
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> sqrt(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> sqrt(TwoFloat<T> const & a) {
   using namespace detailsTwoFloat;
   auto s = std::sqrt(a.hi());
   auto r = std::fma(-s,s,a.hi());
@@ -551,19 +453,13 @@ inline constexpr TwoFloat<T> sqrt(TwoFloat<T> const & a) {
 }
 
 template<std::floating_point T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr T square(T a) {
+TWOFLOAT_INLINE T square(T a) {
    static_assert(std::is_floating_point_v<T>);
    return a*a;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> square(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> square(TwoFloat<T> const & a) {
   using namespace detailsTwoFloat;
   TwoFloat<T> ret;
   d_square(ret.hi(),ret.lo(),a.hi(),a.lo());
@@ -571,10 +467,7 @@ inline constexpr TwoFloat<T> square(TwoFloat<T> const & a) {
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> square2(T a) {
+TWOFLOAT_INLINE TwoFloat<T> square2(T a) {
 using namespace detailsTwoFloat;
    return  {a,a,fromProd()};
 }
@@ -584,25 +477,19 @@ template<typename T>
 #ifdef __NVCC__
      __device__ __host__
 #endif
-inline constexpr TwoFloat<T> square2(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> square2(TwoFloat<T> const & a) {
   return square(a);
 }
 */
 
 template<std::floating_point T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr T fabs(T a) {
+TWOFLOAT_INLINE T fabs(T a) {
    static_assert(std::is_floating_point_v<T>);
    return std::abs(a);
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr TwoFloat<T> fabs(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> fabs(TwoFloat<T> const & a) {
   using namespace detailsTwoFloat;
   return {fabs(a.hi()),fabs(a.lo()),fromMembers()};
 }
@@ -610,41 +497,25 @@ inline constexpr TwoFloat<T> fabs(TwoFloat<T> const & a) {
 
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator-=(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator-=(TwoFloat<T> const & a) {
    *this = *this -a;
    return *this;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator+=(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator+=(TwoFloat<T> const & a) {
    *this = *this +a;
    return *this;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator*=(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator*=(TwoFloat<T> const & a) {
    *this = *this *a;
    return *this;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator/=(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator/=(TwoFloat<T> const & a) {
    *this = *this /a;
    return *this;
 }
@@ -653,52 +524,32 @@ constexpr TwoFloat<T> & TwoFloat<T>::operator/=(TwoFloat<T> const & a) {
 
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator-=(T a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator-=(T a) {
    *this = *this -a;
    return *this;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator+=(T a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator+=(T a) {
    *this = *this +a;
    return *this;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator*=(T a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator*=(T a) {
    *this = *this *a;
    return *this;
 }
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> & TwoFloat<T>::operator/=(T  a) {
+TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator/=(T  a) {
    *this = *this /a;
    return *this;
 }
 
 
 template<std::floating_point T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr T rsqrt(T a) {
+TWOFLOAT_INLINE T rsqrt(T a) {
 #ifdef __NVCC__
 if constexpr (std::is_same_v<T,float>)
    return ::rsqrtf(a);
@@ -709,11 +560,7 @@ else
 } 
 
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline
-constexpr TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
+TWOFLOAT_INLINE TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
   using namespace detailsTwoFloat;
   auto x = a.hi();
   float r;
@@ -733,10 +580,7 @@ constexpr TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
 
 //  Algorithm 10 from https://hal.science/hal-03482567
 template<typename V>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr auto squaredNorm(V const  & v, int n) -> typename std::remove_cvref<decltype(v[0])>::type {
+TWOFLOAT_INLINE auto squaredNorm(V const  & v, int n) -> typename std::remove_cvref<decltype(v[0])>::type {
    using TT = typename std::remove_cvref<decltype(v[0])>::type;
    using namespace detailsTwoFloat;
    TT a0 = square(v[0]); 
@@ -753,10 +597,7 @@ inline constexpr auto squaredNorm(V const  & v, int n) -> typename std::remove_c
 
 
 template<typename V>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
-inline constexpr auto squaredNorm2(V const  & v, int n) -> TwoFloat<typename std::remove_cvref<decltype(v[0])>::type> {
+TWOFLOAT_INLINE auto squaredNorm2(V const  & v, int n) -> TwoFloat<typename std::remove_cvref<decltype(v[0])>::type> {
    using T = typename std::remove_cvref<decltype(v[0])>::type;
    using TT = TwoFloat<typename std::remove_cvref<decltype(v[0])>::type>;
    static_assert(std::is_floating_point_v<T>);
