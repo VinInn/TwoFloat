@@ -1,3 +1,4 @@
+// c++ -O3 -march=native tests/TwoFloat_t.cpp -Iinclude -std=c++20
 #include "TwoFloat.h"
 #include "ulpDiff.h"
 #include <iostream>

@@ -1,9 +1,8 @@
 #include "TwoFloat.h"
 #include <cstdio>
 
-#ifdef __NVCC__
-__global__ 
-#endif
+
+__host__ __device__
 void go(int k) {
 
   printf("k %d\n",k);
@@ -89,20 +88,45 @@ if (k==6) {
   printf("%a\n", md );
 }
 
+if (k==7) {
+  printf("sqrt\n");
+  auto mf =  sqrt(f1);
+  auto md =  sqrt(d1);
+  printf("%a\n", sqrt(f1.hi()) );
+  printf("%a,%a\n", mf.hi() , mf.lo() );
+  printf("%a\n", double(mf.hi()) + double(mf.lo()) );
+  printf("%a\n", md );
 }
 
-#ifdef __NVCC__
-#include "cudaCheck.h"
-#endif
+if (k==8) {
+  printf("rsqrt\n");
+  auto mf =  rsqrt(f1);
+  auto md =  rsqrt(d1);
+  printf("%a\n", rsqrt(f1.hi()) );
+  printf("%a,%a\n", mf.hi() , mf.lo() );
+  printf("%a\n", double(mf.hi()) + double(mf.lo()) );
+  printf("%a\n", md );
+}
 
-int main(){
-  for (int k=0; k<7; ++k) {
-#ifdef __NVCC__
-    go<<<1,1,0,0>>>(k);
-    cudaCheck(cudaDeviceSynchronize());
-#else
+
+
+}
+
+
+__global__
+void kgo(int k) {
     go(k);
-#endif
+}
+
+
+#include <iostream>
+int main(){
+  for (int k=0; k<8; ++k) {
+    std::cout << "on GPU" << std::endl;
+    kgo<<<1,1,0,0>>>(k);
+    cudaDeviceSynchronize();
+    std::cout << "on CPU" << std::endl;
+    go(k);
   }
   return 0;
 

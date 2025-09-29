@@ -7,6 +7,13 @@
 #include<ostream>
 #if defined(__x86_64__)
 #include <x86intrin.h>
+#if !defined(__CUDA_ARCH__)
+constexpr bool onX86 = true;
+#else
+constexpr bool onX86 = false;
+#endif
+#else
+constexpr bool onX86 = false;
 #endif
 
 namespace detailsTwoFloat {
@@ -692,6 +699,12 @@ template<std::floating_point T>
 #endif
 inline
 constexpr T rsqrt(T a) {
+#ifdef __NVCC__
+if constexpr (std::is_same_v<T,float>)
+   return ::rsqrtf(a);
+else
+   return ::rsqrt(a);
+#endif
    return T(1)/std::sqrt(a);
 } 
 
@@ -702,26 +715,19 @@ template<typename T>
 inline
 constexpr TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
   using namespace detailsTwoFloat;
-  if constexpr (std::is_same_v<T,float>) {
-#if defined(__x86_64__)
-   auto x = a.hi();
-   float r;
-   _mm_store_ss( &r, _mm_rsqrt_ss( _mm_load_ss( &x ) ) );
-   // standard one NR iteration
-   r =  r * (1.5f - 0.5f * x * (r * r));
+  auto x = a.hi();
+  float r;
+  if constexpr (onX86 && std::is_same_v<T,float>) {
+     _mm_store_ss( &r, _mm_rsqrt_ss( _mm_load_ss( &x ) ) );
+     // standard one NR iteration
+     r =  r * (1.5f - 0.5f * x * (r * r));
+  } else { r = rsqrt(x);}
    float rx = r*x;
    auto drx = std::fma(r, x, -rx);
    float h = std::fma(r,rx,-1.0f) + r*drx;
    auto dr = (0.5f*r)*h;
    dr += (0.5f*r)*(r*r)*a.lo();
    return {r,-dr,fromSum()};
-#else
-   return T(1)/sqrt(a);
-#endif
-  } else {
-    return T(1)/sqrt(a);
-  }
-
 }
 
 
