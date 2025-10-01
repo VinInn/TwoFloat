@@ -22,3 +22,8 @@ The file consists in four sections:
 2. The TwoFloat class itself
 3. A set of operators implementing the 4 arithmetic operations and comparisons
 4. A small set of elementary functions plus some utilities
+
+## Usage
+
+The TwoFloat class is designed to be a seamless drop-in replacement for float-types in any code included templated libraries such as Eigen.
+
