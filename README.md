@@ -27,3 +27,9 @@ The file consists in four sections:
 
 The TwoFloat class is designed to be a seamless drop-in replacement for float-types in any code included templated libraries such as Eigen.
 
+Implicit conversions to and from the single-word type (the template argument) are supported.
+That will also allow the implicit promotion to double following the C++ language rule often producing not the result the coder expected.
+
+Implicit promotion to double can be easily detected using compiler option *"-Wdouble-promotion"*.
+Conversion can be forced to be explicit defining the macro *"TWOFLOAT_EXPLICIT"*
+
