@@ -31,5 +31,6 @@ Implicit conversions to and from the single-word type (the template argument) ar
 That will also allow the implicit promotion to double following the C++ language rule often producing not the result the coder expected.
 
 Implicit promotion to double can be easily detected using compiler option *"-Wdouble-promotion"*.
+
 Conversion can be forced to be explicit defining the macro *"TWOFLOAT_EXPLICIT"*
 
