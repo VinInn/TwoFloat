@@ -23,7 +23,6 @@ constexpr bool onX86 = false;
 #define TWOFLOAT_INLINE inline constexpr
 #endif
 
-
 namespace detailsTwoFloat {
 
 // imported from https://gitlab.inria.fr/core-math/core-math/-/blob/master/src/binary64/pow/pow.h
@@ -154,14 +153,22 @@ class TwoFloat {
 public:
 
   TWOFLOAT_INLINE TwoFloat() = default;
-  TWOFLOAT_INLINE /*explicit*/ TwoFloat(T a) : mhi(a), mlo(0) {}
+  TWOFLOAT_INLINE
+#ifdef TWOFLOAT_EXPLICIT
+  explicit
+#endif 
+  TwoFloat(T a) : mhi(a), mlo(0) {}
   TWOFLOAT_INLINE TwoFloat & operator=(T a) { mhi=a; mlo=0; return *this;}
-  TWOFLOAT_INLINE explicit operator T() const { return mhi;}
+  TWOFLOAT_INLINE 
+#ifdef TWOFLOAT_EXPLICIT 
+  explicit
+#endif
+  operator T() const { return mhi;}
 
 
   template<std::floating_point D, detailsTwoFloat::From f, 
            typename = typename std::enable_if_t<detailsTwoFloat::Tag<f>::value()==detailsTwoFloat::From::fdouble>>
-  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-mhi) {}
+  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-double(mhi)) {}
 
   template<detailsTwoFloat::From f>
   TWOFLOAT_INLINE TwoFloat(T a, T b, detailsTwoFloat::Tag<f>) {
