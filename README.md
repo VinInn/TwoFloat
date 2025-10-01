@@ -20,5 +20,5 @@ The code is contained in just one file *TwoFloat.h*.
 The file consists in four sections:
 1. Basic Block of DoubleWord Arithmetic imported from a previous project in C.
 2. The TwoFloat class itself
-3. A set of operators implementing the 4 arithmetic operations and comparisions
+3. A set of operators implementing the 4 arithmetic operations and comparisons
 4. A small set of elementary functions plus some utilities
