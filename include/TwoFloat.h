@@ -280,10 +280,10 @@ TWOFLOAT_INLINE TwoFloat<T> operator*(T b, TwoFloat<T> const & a) {
   return a*b;
 }
 
-template<typename T>
+template<std::floating_point T>
 TWOFLOAT_INLINE T toSingle(T a) { return a;}
 
-template<typename T>
+template<std::floating_point T>
 TWOFLOAT_INLINE double toDouble(T a) { return a;}
 
 
@@ -298,6 +298,8 @@ TWOFLOAT_INLINE T toSingle(TwoFloat<T> const & a) { return a.hi();}
 
 template<typename T>
 TWOFLOAT_INLINE double toDouble(TwoFloat<T> const & a) { return double(a.hi())+double(a.lo());}
+
+TWOFLOAT_INLINE TwoFloat<float> fromDouble(double a) { return {a,detailsTwoFloat::fromDouble()};}
 
 
 

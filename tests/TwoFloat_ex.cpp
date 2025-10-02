@@ -61,7 +61,7 @@ int main() {
     std::cout << std::endl;
     std::cout <<"squared norm"<< std::endl;
 
-    float v[4] = {2.f,1.e-4,1.e-4,2.f};
+    float v[4] = {2.f,1.e-4f,1.e-4f,2.f};
     FF vv[4];
     float sf=0;
     FF sff=0;
@@ -69,7 +69,6 @@ int main() {
       vv[i]=v[i];
       sf+=v[i]*v[i];
       sff+=vv[i]*vv[i];
-
     }
     std::cout << std::hexfloat << sf << std::endl;
     std::cout << std::hexfloat << sff << std::endl;
@@ -78,6 +77,15 @@ int main() {
     FF ssn = squaredNorm(vv,4);
     std::cout << std::hexfloat << ssn << std::endl;
     std::cout << std::endl;
+
+    double vd[4] = {std::sqrt(2.),std::sqrt(1.e-4),-std::sqrt(1.e-4),-std::sqrt(2.)};
+    FF vc[4];
+    //std::transform(vd,vd+4,vc,fromDouble);
+    auto dst = std::begin(vc);
+    for (auto const & x : vd) *(dst++) = fromDouble(x);
+    for (auto x : vd) std::cout << x << ' '; std::cout << std::endl;
+    for (auto const & x : vc) std::cout << x << ' '; std::cout << std::endl;
+
   }
 
   float h = std::sqrt(2.f);
