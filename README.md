@@ -23,9 +23,9 @@ The file consists in four sections:
 3. A set of operators implementing the 4 arithmetic operations and comparisons
 4. A small set of elementary functions plus some utilities
 
-## Usage
+### Usage
 
-The TwoFloat class is designed to be a seamless drop-in replacement for float-types in any code included templated libraries such as Eigen.
+The TwoFloat class is designed to be a seamless drop-in replacement for float-types in any code, included templated libraries such as Eigen.
 
 Implicit conversions to and from the single-word type (the template argument) are supported.
 That will also allow the implicit promotion to double following the C++ language rule often producing not the result the coder expected.
@@ -34,10 +34,12 @@ Implicit promotion to double can be easily detected using compiler option *"-Wdo
 
 Conversion can be forced to be explicit defining the macro *"TWOFLOAT_EXPLICIT"*
 
-## Choice of algoritms
+### Choice of algorithms
 
 By default Sum is implemented using Algo 5 from Ref 1 (aka SloppySum), Multiplication by Algo 11 and Division by Algo 17.
 
 More precise algoritms can be selected by defining macro "*TWOFLOAT_PRECISE_SUM*" (Algo 6 for Sum), "*TWOFLOAT_PRECISE_MUL*" (Algo 12 for Multiplication) and
 "*TWOFLOAT_PRECISE_Div*" (Algo 18 for Division)
+
+Please refer to table 1 in Ref 1 for details about precision and "latency" of the algorithms.
 
