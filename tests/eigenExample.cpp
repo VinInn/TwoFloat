@@ -15,9 +15,13 @@ void fillMatrix(M& m) {
 
 template <typename M1, typename M2>
 void copy(M1 const & src, M2 & dst) {
-
+  using F = decltype(dst(0,0));
   for (unsigned int i = 0; i < src.rows(); ++i) 
-    for (unsigned int j = 0; j < src.cols(); ++j)  dst(i,j) = fromDouble(src(i,j));
+    for (unsigned int j = 0; j < src.cols(); ++j)
+    if constexpr (std::is_floating_point_v<F>)
+       dst(i,j) = double(src(i,j));
+    else
+       dst(i,j) = fromDouble(src(i,j));
 
 //   auto dsti = std::begin(dst.reshaped());
 //   for (auto x : src.reshaped()) *(dsti++) = fromDouble(x);
@@ -54,13 +58,13 @@ int main() {
   fillMatrix(md53);
   fillMatrix(md35);
   fillMatrix(md55);
-  Eigen::Matrix<double, 5, 5> resd = md53*md35 + md55;
+  Eigen::Matrix<double, 5, 5> resd = md53*md35 - md55;
   std::cout << resd << std::endl;
 
   copy(md53,mf53);
   copy(md35,mf35);
   copy(md55,mf55);
-  Eigen::Matrix<FF, 5, 5> resf = mf53*mf35 + mf55;
+  Eigen::Matrix<FF, 5, 5> resf = mf53*mf35 - mf55;
   std::cout << resf << std::endl;
 
   Eigen::Matrix<double, 5, 5> diff;

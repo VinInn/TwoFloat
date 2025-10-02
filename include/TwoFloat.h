@@ -530,6 +530,7 @@ TWOFLOAT_INLINE TwoFloat<T> sqrt(TwoFloat<T> const & a) {
 #endif
 }
 
+
 template<std::floating_point T>
 TWOFLOAT_INLINE T square(T a) {
    static_assert(std::is_floating_point_v<T>);
