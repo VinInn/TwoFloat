@@ -3,6 +3,7 @@
 #include <limits>
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 template<std::floating_point T>
 void go(int k) {
@@ -12,23 +13,23 @@ void go(int k) {
 
   T eps = T(0.25)*std::numeric_limits<T>::epsilon();
   T a = std::sqrt(T(3.));
+  DW da = a;
+  DW de = eps;
+  DW d1(a,eps, fromMembers());
+  DW d2(a,eps, fromSum());
+  DW d3(a,-eps, fromMembers());
+
 
   if (k==0) {
-    DW da = a;
-    DW de = eps;
     assert(da.hi()==a);
     assert(da.lo()==0);
-    DW d1(a,eps, fromMembers());    
     assert(d1.hi()==a);
     assert(d1.lo()==eps);
     DW d2(a,eps, fromSum());
     assert(d2.hi()==a);
     assert(d2.lo()==eps);
-    DW d3(a,-eps, fromMembers());
-
-    assert(0 == a+eps-a);
-    assert(0 != da+de-da);
-
+  }
+  if (k==1) {
     assert(da==a);
     assert(da>=a);
     assert(da<=a);
@@ -51,9 +52,29 @@ void go(int k) {
     assert(a>=d3);
     assert(eps<da);
   }
-
-
-
+  if (k==2) {
+    assert(a == a+eps);
+    assert(0 == a+eps-a);
+    assert(0 != da+de-da);
+    assert(a+d1 == d1+a);
+    assert(d2+d1 == d1+d2);
+    assert((d2+d3).lo() ==0);
+    assert(d1-d2 ==0);
+  }
+  if (k==3) {
+    assert(a*eps == da*de);
+    assert(a*de == a*eps);
+    assert(de*a == a*eps);
+    assert(a*d1 == d1*a);
+    assert(d2*d1 == d1*d2);
+  }
+  if (k==4) {
+    assert(a/eps == da/de);
+    // assert(eps/a == de/da);
+    assert(a/de == a/eps);
+    // assert(e/da == eps/a);
+    // std::cout << de/da << " vs " <<  eps/a << std::endl;
+  }
 }
 
 
