@@ -30,13 +30,25 @@ void go(int k) {
     assert(0 != da+de-da);
 
     assert(da==a);
+    assert(da>=a);
+    assert(da<=a);
+    assert(a>=da);
+    assert(a<=da);
     assert(a==da);
     assert(d1==d2);
+    assert(d1<=d2);
+    assert(d1>=d2);
     assert(da<d1);
+    assert(d1>da);
+    assert(da<=d1);
+    assert(d1>=da);
     assert(de<da);
     assert(de<a);
+    assert(de<=a);
     assert(a<d1);
-    assert(d3<a);
+    assert(a<=d1);
+    assert(d3<=a);
+    assert(a>=d3);
     assert(eps<da);
   }
 

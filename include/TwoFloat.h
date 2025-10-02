@@ -267,7 +267,7 @@ TWOFLOAT_INLINE bool operator<=(TwoFloat<T> const & a, T b) {
   return !(a>b);
 }
 template<typename T>
-TWOFLOAT_INLINE bool operator<=(T b, TwoFloat<T> const & a) {
+TWOFLOAT_INLINE bool operator<=(T a, TwoFloat<T> const & b) {
   return !(a>b);
 }
 template<typename T>
@@ -280,7 +280,7 @@ TWOFLOAT_INLINE bool operator>=(TwoFloat<T> const & a, T b) {
   return !(a<b);
 }
 template<typename T>
-TWOFLOAT_INLINE bool operator>=(T b, TwoFloat<T> const & a) {
+TWOFLOAT_INLINE bool operator>=(T a, TwoFloat<T> const & b) {
   return !(a<b);
 }
 template<typename T>
