@@ -24,11 +24,20 @@ void go(int k) {
     DW d2(a,eps, fromSum());
     assert(d2.hi()==a);
     assert(d2.lo()==eps);
-
+    DW d3(a,-eps, fromMembers());
 
     assert(0 == a+eps-a);
     assert(0 != da+de-da);
 
+    assert(da==a);
+    assert(a==da);
+    assert(d1==d2);
+    assert(da<d1);
+    assert(de<da);
+    assert(de<a);
+    assert(a<d1);
+    assert(d3<a);
+    assert(eps<da);
   }
 
 

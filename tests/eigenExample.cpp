@@ -75,11 +75,11 @@ int main() {
   copy(md33,mf33);
 
    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 3, 3>> es;
-   auto const & sd = es.computeDirect(md33);
+   auto const & sd = es.compute/*Direct*/(md33);
    std::cout << sd.eigenvalues()  << std::endl;
 
    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<FF, 3, 3>> es2;
-   auto const & sf = es2.computeDirect(mf33);
+   auto const & sf = es2.compute/*Direct*/(mf33);
    std::cout << sf.eigenvalues()  << std::endl;
    Eigen::Vector3d v;
    copyBack(sf.eigenvalues(),v);

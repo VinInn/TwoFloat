@@ -222,6 +222,75 @@ std::ostream& operator<<(std::ostream& os, TwoFloat<T> const & t)
 }
 
 template<typename T>
+TWOFLOAT_INLINE bool operator==(TwoFloat<T> const & a, T b) {
+  return a.lo()==0 && a.hi()==b;
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator==(T b, TwoFloat<T> const & a) {
+  return a.lo()==0 && a.hi()==b;
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator==(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+  return a.hi()==b.hi() && a.lo() == b.lo();
+}
+
+template<typename T>
+TWOFLOAT_INLINE bool operator<(TwoFloat<T> const & a, T b) {
+  return a.hi()<b || (a.hi()==b && a.lo()<0);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator<(T b, TwoFloat<T> const & a) {
+  return b<a.hi() || (a.hi()==b && a.lo()>0);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator<(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+  return a.hi()<b.hi() || (a.hi()==b.hi() && a.lo()<b.lo());
+}
+
+
+template<typename T>
+TWOFLOAT_INLINE bool operator>(TwoFloat<T> const & a, T b) {
+  return a.hi()>b || (a.hi()==b && a.lo()>0);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator>(T b, TwoFloat<T> const & a) {
+  return b>a.hi() || (a.hi()==b && a.lo()<0);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator>(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+  return a.hi()>b.hi() || (a.hi()==b.hi() && a.lo()>b.lo());
+}
+
+
+template<typename T>
+TWOFLOAT_INLINE bool operator<=(TwoFloat<T> const & a, T b) {
+  return !(a>b);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator<=(T b, TwoFloat<T> const & a) {
+  return !(a>b);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator<=(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+  return !(a>b);
+}
+
+template<typename T>
+TWOFLOAT_INLINE bool operator>=(TwoFloat<T> const & a, T b) {
+  return !(a<b);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator>=(T b, TwoFloat<T> const & a) {
+  return !(a<b);
+}
+template<typename T>
+TWOFLOAT_INLINE bool operator>=(TwoFloat<T> const & a, TwoFloat<T> const & b) {
+  return !(a<b);
+}
+
+
+
+template<typename T>
 //, typename U, typename = typename std::enable_if_t<std::is_same_v<T, U>>>
 TWOFLOAT_INLINE TwoFloat<T> operator+(TwoFloat<T> const & a, T b) {
   // static_assert( std::is_same<T, U>() );
@@ -503,6 +572,11 @@ TWOFLOAT_INLINE TwoFloat<T> fabs(TwoFloat<T> const & a) {
   return {fabs(a.hi()),fabs(a.lo()),fromMembers()};
 }
 
+template<typename T>
+TWOFLOAT_INLINE TwoFloat<T> abs(TwoFloat<T> const & a) {
+  using namespace detailsTwoFloat;
+  return fabs(a);
+}
 
 
 template<typename T>
