@@ -16,12 +16,15 @@ constexpr bool onX86 = false;
 constexpr bool onX86 = false;
 #endif
 
-
 #ifdef __NVCC__
 #define TWOFLOAT_INLINE __device__ __host__ inline constexpr 
 #else
 #define TWOFLOAT_INLINE inline constexpr
 #endif
+
+
+TWOFLOAT_INLINE void trapTwoFloat() { }
+
 
 namespace detailsTwoFloat {
 
@@ -152,13 +155,25 @@ template<typename T>
 class TwoFloat {
 public:
 
+TWOFLOAT_INLINE void trap() const {
+     if (std::isnan(mhi) || std::isnan(mlo)) trapTwoFloat();
+}
+
   TWOFLOAT_INLINE TwoFloat() = default;
+
+
   TWOFLOAT_INLINE
 #ifdef TWOFLOAT_EXPLICIT
   explicit
 #endif 
   TwoFloat(T a) : mhi(a), mlo(0) {}
-  TWOFLOAT_INLINE TwoFloat & operator=(T a) { mhi=a; mlo=0; return *this;}
+
+  TWOFLOAT_INLINE TwoFloat & operator=(T a) { 
+     mhi=a; mlo=0;
+     trap();
+     return *this;
+  }
+
   TWOFLOAT_INLINE 
 #ifdef TWOFLOAT_EXPLICIT 
   explicit
@@ -185,6 +200,7 @@ public:
     } else if constexpr (Tag::value()==From::div) {
       a_div(mhi,mlo,a,b);
     } // else static_assert(false,"Tag not valid");
+    trap();
   }
 
 
@@ -582,25 +598,25 @@ TWOFLOAT_INLINE TwoFloat<T> abs(TwoFloat<T> const & a) {
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator-=(TwoFloat<T> const & a) {
    *this = *this -a;
-   return *this;
+   trap(); return *this;
 }
 
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator+=(TwoFloat<T> const & a) {
    *this = *this +a;
-   return *this;
+   trap(); return *this;
 }
 
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator*=(TwoFloat<T> const & a) {
    *this = *this *a;
-   return *this;
+   trap(); return *this;
 }
 
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator/=(TwoFloat<T> const & a) {
    *this = *this /a;
-   return *this;
+   trap(); return *this;
 }
 
 
@@ -609,25 +625,25 @@ TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator/=(TwoFloat<T> const & a) {
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator-=(T a) {
    *this = *this -a;
-   return *this;
+   trap(); return *this;
 }
 
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator+=(T a) {
    *this = *this +a;
-   return *this;
+   trap(); return *this;
 }
 
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator*=(T a) {
    *this = *this *a;
-   return *this;
+   trap(); return *this;
 }
 
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> & TwoFloat<T>::operator/=(T  a) {
    *this = *this /a;
-   return *this;
+   trap(); return *this;
 }
 
 
