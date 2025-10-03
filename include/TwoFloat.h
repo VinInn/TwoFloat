@@ -22,9 +22,9 @@ constexpr bool onX86 = false;
 #define TWOFLOAT_INLINE inline constexpr
 #endif
 
-
-TWOFLOAT_INLINE void trapTwoFloat() { }
-
+#ifdef TWOFLOAT_TRAP
+void trapTwoFloat() { abort();}
+#endif
 
 namespace detailsTwoFloat {
 
@@ -156,7 +156,9 @@ class TwoFloat {
 public:
 
 TWOFLOAT_INLINE void trap() const {
+#ifdef TWOFLOAT_TRAP
      if (std::isnan(mhi) || std::isnan(mlo)) trapTwoFloat();
+#endif
 }
 
   TWOFLOAT_INLINE TwoFloat() = default;
@@ -166,7 +168,7 @@ TWOFLOAT_INLINE void trap() const {
 #ifdef TWOFLOAT_EXPLICIT
   explicit
 #endif 
-  TwoFloat(T a) : mhi(a), mlo(0) {}
+  TwoFloat(T a) : mhi(a), mlo(0) { trap();}
 
   TWOFLOAT_INLINE TwoFloat & operator=(T a) { 
      mhi=a; mlo=0;
@@ -183,7 +185,7 @@ TWOFLOAT_INLINE void trap() const {
 
   template<std::floating_point D, detailsTwoFloat::From f, 
            typename = typename std::enable_if_t<detailsTwoFloat::Tag<f>::value()==detailsTwoFloat::From::fdouble>>
-  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-double(mhi)) {}
+  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-double(mhi)) { trap();}
 
   template<detailsTwoFloat::From f>
   TWOFLOAT_INLINE TwoFloat(T a, T b, detailsTwoFloat::Tag<f>) {

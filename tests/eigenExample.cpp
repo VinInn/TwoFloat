@@ -42,6 +42,7 @@ void copyBack(M1 const & src, M2 & dst) {
 #include <iostream>
 #include <limits>
 #include <complex>
+#include <fenv.h>
 
 using FF = TwoFloat<float>;
 
@@ -51,7 +52,20 @@ FF imag(FF const & a) { return 0;}
 FF conj(FF const & a) { return a;}
 */
 
+FF abs2(FF const & a) { return square(a);}
+
 int main() {
+
+  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+
+
+  {
+  FF a = fromDouble(std::sqrt(3.));
+  auto q = Eigen::numext::abs2(a);
+  std::cout << a << ' ' << q << std::endl;
+  }
+
+
 
   Eigen::Matrix<double, 3, 3> md33;
   Eigen::Matrix<double, 5, 3> md53;
