@@ -94,6 +94,14 @@ int main() {
    std::cout << mx << std::endl;
    std::cout << std::endl;
 
+   mx.setIdentity();
+   std::cout << mx << std::endl;
+   std::cout << std::endl;
+
+   mx.setIdentity(2,3);
+   std::cout << mx << std::endl;
+   std::cout << std::endl;
+
   }
 
   fillMatrix(md33);
