@@ -137,10 +137,12 @@ int main() {
    {
    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 3, 3>> es;
    auto const & sd = es.compute(md33);
+   if (es.info() != Eigen::Success) std::cout << "falied" << std::endl;
    std::cout << sd.eigenvalues()  << std::endl;
 
    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<FF, 3, 3>> es2;
    auto const & sf = es2.compute(mf33);
+   if (sf.info() != Eigen::Success) std::cout << "falied" << std::endl;
    std::cout << sf.eigenvalues()  << std::endl;
    Eigen::Vector3d v;
    copyBack(sf.eigenvalues(),v);
@@ -164,9 +166,22 @@ int main() {
     Eigen::JacobiSVD<Eigen::Matrix<double, 3, 5>, Eigen::ComputeThinU | Eigen::ComputeThinV> svd(md35);
     std::cout << svd.singularValues() << std::endl;
     Eigen::JacobiSVD<Eigen::Matrix<FF, 3, 5>, Eigen::ComputeThinU | Eigen::ComputeThinV> svf(mf35);
-    std::cout << svf.singularValues() << std::endl;
+    std::cout << svf.singularValues() << std::endl << std::endl;
    }
 
+
+   {
+     Eigen::Vector3d vd; vd << -1., std::sqrt(3.),  4.;
+     Eigen::Vector<FF,3> vf;
+     copy(vd,vf); 
+     md33.fullPivHouseholderQr().solve(vd);
+     std::cout << vd << std::endl;
+     mf33.fullPivHouseholderQr().solve(vf);
+     std::cout << vf << std::endl;
+     Eigen::Vector3d v;
+     copyBack(vf,v);
+     std::cout << v-vd << std::endl << std::endl;
+   }
 
   return 0;
 }
