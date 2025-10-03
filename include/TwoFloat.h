@@ -134,7 +134,7 @@ TWOFLOAT_INLINE void s_div(T& hi, T& lo, T ah, T al, T b) {
 
    template<From from>
    struct Tag {
-     constexpr Tag() = default;
+     constexpr Tag()  = default;
      static constexpr From value() { return from;}
    };
 

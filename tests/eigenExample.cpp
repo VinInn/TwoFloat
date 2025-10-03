@@ -38,8 +38,10 @@ void copyBack(M1 const & src, M2 & dst) {
 #include "ulpDiff.h"
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
+#include <Eigen/SVD>
 #include <iostream>
 #include <limits>
+#include <complex>
 
 using FF = TwoFloat<float>;
 
@@ -58,6 +60,14 @@ int main() {
   std::cout << std::numeric_limits<Eigen::Matrix<double, 3, 3>::Scalar>::min() << std::endl;
   std::cout << std::numeric_limits<Eigen::Matrix<FF, 3, 3>::Scalar>::min() << std::endl;
   std::cout << std::endl;
+
+  {
+  md33 << 1,-1,0, 2, 3, 4, -4, -3, -2;
+  mf33 << 1,-1,0, 2, 3, 4, -4, -3, -2;
+  Eigen::Matrix<double, 3, 3> d;
+  copyBack(mf33,d);
+  std::cout << d-md33 << std::endl<< std::endl;
+  }
 
   fillMatrix(md33);
   fillMatrix(md53);
@@ -121,6 +131,13 @@ int main() {
    Eigen::Vector3d v;
    copyBack(sf.eigenvalues(),v);
    std::cout << v-sd.eigenvalues() << std::endl<< std::endl;
+   }
+
+   {
+    Eigen::JacobiSVD<Eigen::Matrix<double, 3, 5>, Eigen::ComputeThinU | Eigen::ComputeThinV> svd(md35);
+    std::cout << svd.singularValues() << std::endl;
+    Eigen::JacobiSVD<Eigen::Matrix<FF, 3, 5>, Eigen::ComputeThinU | Eigen::ComputeThinV> svf(mf35);
+    std::cout << svf.singularValues() << std::endl;
    }
 
 

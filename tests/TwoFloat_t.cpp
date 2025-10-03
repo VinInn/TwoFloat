@@ -22,6 +22,8 @@ void go(int k) {
   DW d4(-a,eps, fromMembers());
 
   if (k==0) {
+    DW q = d3;
+    assert(q == d3);
     assert(da.hi()==a);
     assert(da.lo()==0);
     assert(d1.hi()==a);
