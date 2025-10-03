@@ -570,7 +570,7 @@ TWOFLOAT_INLINE T fabs(T a) {
 template<typename T>
 TWOFLOAT_INLINE TwoFloat<T> fabs(TwoFloat<T> const & a) {
   using namespace detailsTwoFloat;
-  return {fabs(a.hi()),fabs(a.lo()),fromMembers()};
+  return a > T(0) ? a : -a;
 }
 
 template<typename T>

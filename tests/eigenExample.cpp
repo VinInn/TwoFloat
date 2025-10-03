@@ -39,6 +39,7 @@ void copyBack(M1 const & src, M2 & dst) {
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 #include <iostream>
+#include <limits>
 
 using FF = TwoFloat<float>;
 
@@ -53,6 +54,10 @@ int main() {
   Eigen::Matrix<FF, 5, 3> mf53;
   Eigen::Matrix<FF, 3, 5> mf35;
   Eigen::Matrix<FF, 5, 5> mf55;
+
+  std::cout << std::numeric_limits<Eigen::Matrix<double, 3, 3>::Scalar>::min() << std::endl;
+  std::cout << std::numeric_limits<Eigen::Matrix<FF, 3, 3>::Scalar>::min() << std::endl;
+  std::cout << std::endl;
 
   fillMatrix(md33);
   fillMatrix(md53);
@@ -75,6 +80,20 @@ int main() {
   resf = resf.inverse();
   copyBack(resf,diff);
   std::cout << diff-resd << std::endl<< std::endl;
+
+  {
+    auto a = resd.rowwise().sum().maxCoeff();
+    auto b = resf.rowwise().sum().maxCoeff();
+    std::cout << a <<' '<< b << ' ' <<toDouble(b)-a << std::endl;
+  }
+
+  std::cout << resd.squaredNorm() << ' ' << resf.squaredNorm() << std::endl;
+  std::cout << resd.norm() << ' ' << resf.norm() << std::endl;
+  std::cout << resd.row(0).dot(resd.row(1)) << ' ';
+  std::cout << resf.row(0).dot(resf.row(1)) << ' ';
+  std::cout << toDouble(resf.row(0).dot(resf.row(1)))-resd.row(0).dot(resd.row(1)) << std::endl;
+  std::cout << std::endl;
+
 
   copy(md33,mf33);
 
