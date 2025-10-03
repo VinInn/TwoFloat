@@ -45,6 +45,12 @@ void copyBack(M1 const & src, M2 & dst) {
 
 using FF = TwoFloat<float>;
 
+/*
+FF real(FF const & a) { return a;}
+FF imag(FF const & a) { return 0;}
+FF conj(FF const & a) { return a;}
+*/
+
 int main() {
 
   Eigen::Matrix<double, 3, 3> md33;
@@ -57,16 +63,37 @@ int main() {
   Eigen::Matrix<FF, 3, 5> mf35;
   Eigen::Matrix<FF, 5, 5> mf55;
 
+  using MfX = Eigen::Matrix<FF,-1,-1>;
+
   std::cout << std::numeric_limits<Eigen::Matrix<double, 3, 3>::Scalar>::min() << std::endl;
   std::cout << std::numeric_limits<Eigen::Matrix<FF, 3, 3>::Scalar>::min() << std::endl;
   std::cout << std::endl;
 
   {
-  md33 << 1,-1,0, 2, 3, 4, -4, -3, -2;
-  mf33 << 1,-1,0, 2, 3, 4, -4, -3, -2;
+  md33 << 1,-1,0, std::sqrt(2.), 3, 4, -4, -3, -2;
+  mf33 << 1,-1,0, fromDouble(std::sqrt(2.)), 3, 4, -4, -3, -2;
   Eigen::Matrix<double, 3, 3> d;
   copyBack(mf33,d);
   std::cout << d-md33 << std::endl<< std::endl;
+
+  std::cout << mf33 << std::endl;
+  std::cout << std::endl;
+
+  std::cout << mf33.transpose() << std::endl;
+  std::cout << std::endl;
+
+  std::cout << mf33.adjoint() << std::endl;
+  std::cout << std::endl;
+
+  MfX mx = mf33;
+
+   std::cout << mx << std::endl;
+   std::cout << std::endl;
+
+   mx = mf33.block(0, 0, 2, 2).template triangularView<Eigen::Lower>().adjoint();
+   std::cout << mx << std::endl;
+   std::cout << std::endl;
+
   }
 
   fillMatrix(md33);
