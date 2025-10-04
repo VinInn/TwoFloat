@@ -3,6 +3,7 @@
 #include <random>
 
 #include "TwoFloat.h"
+#include "trapTwoFloat.h"
 
 template <typename M>
 void fillMatrix(M& m) {
