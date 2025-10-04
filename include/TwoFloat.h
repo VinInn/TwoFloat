@@ -22,9 +22,9 @@ constexpr bool onX86 = false;
 #define TWOFLOAT_INLINE inline constexpr
 #endif
 
-#ifdef TWOFLOAT_TRAP
-void trapTwoFloat() { abort();}
-#endif
+void trapTwoFloat(float h, float l);
+void trapTwoFloat(double h, double l);
+
 
 namespace detailsTwoFloat {
 
@@ -157,7 +157,7 @@ public:
 
 TWOFLOAT_INLINE void trap() const {
 #ifdef TWOFLOAT_TRAP
-     if (std::isnan(mhi) || std::isnan(mlo)) trapTwoFloat();
+    trapTwoFloat(mhi,mlo);
 #endif
 }
 

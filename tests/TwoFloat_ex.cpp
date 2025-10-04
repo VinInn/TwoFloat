@@ -4,6 +4,22 @@
 #include <iostream>
 #include <limits>
 
+
+template<std::floating_point T>
+void trap(T h, T l){
+  if (std::isnan(h) || std::isnan(l)) std::cout << "W nans: " << h << ","<< l << std::endl;
+  auto eps = std::nextafter(std::abs(h),std::abs(h)+T(1)) - std::abs(h);
+  if(l>eps) std::cout << "W DW not normalized: " << h << ","<< l <<" eps = " << eps << std::endl;
+}
+
+void trapTwoFloat(float h, float l) {
+  trap(h,l);
+}
+
+void trapTwoFloat(double h, double l) {
+  trap(h,l);
+}
+
 int main() {
 
   using namespace detailsTwoFloat;
@@ -18,6 +34,12 @@ int main() {
     std::cout << std::hexfloat << nlDD::min() << ' ' << nlDD::max() << ' ' << nlDD::epsilon() << ' ' << std::endl;
     std::cout << std::endl;
 
+    std::cout << "trap" << std::endl;
+    {
+      FF k{0.5f,1.e-7f,fromMembers()};
+      FF q{nlFF::quiet_NaN()}; 
+    }
+    std::cout << std::endl;
     float a = 4.f;
     float b = 1.e-7f;
     FF aa{a};
