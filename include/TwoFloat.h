@@ -714,3 +714,6 @@ TWOFLOAT_INLINE auto squaredNorm2(V const  & v, int n) -> TwoFloat<typename std:
    }
    return sum + s;
 }
+
+
+#include "TwoFloatLimits.h"

@@ -2,15 +2,22 @@
 #include "TwoFloat.h"
 #include "ulpDiff.h"
 #include <iostream>
-
+#include <limits>
 
 int main() {
 
   using namespace detailsTwoFloat;
   using FF = TwoFloat<float>;
   using DD = TwoFloat<double>;
+  using nlFF = std::numeric_limits<FF>;
+  using nlDD = std::numeric_limits<DD>;
 
   {
+    std::cout << "limits" << std::endl;    
+    std::cout << std::hexfloat << nlFF::min() << ' ' << nlFF::max() << ' ' << nlFF::epsilon() << ' ' << std::endl;
+    std::cout << std::hexfloat << nlDD::min() << ' ' << nlDD::max() << ' ' << nlDD::epsilon() << ' ' << std::endl;
+    std::cout << std::endl;
+
     float a = 4.f;
     float b = 1.e-7f;
     FF aa{a};

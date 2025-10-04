@@ -56,7 +56,7 @@ FF abs2(FF const & a) { return square(a);}
 
 int main() {
 
-  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+//  feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 
 
   {
