@@ -3,7 +3,7 @@
 #include "ulpDiff.h"
 #include <iostream>
 #include <limits>
-
+#include <complex>
 
 template<std::floating_point T>
 void trap(T h, T l){
@@ -214,6 +214,27 @@ int main() {
   std::cout << std::hexfloat << md << ' ' << std::fixed << ulpDiff(mf, FF{md,fromDouble()}) << std::endl;
 
 }
+
+
+{
+   std::cout << "complex" << std::endl;
+
+   using CFF = std::complex<FF>;
+   using CDD = std::complex<DD>;
+   CFF cf1{f1,f2};
+   CFF cf2{f1,-f2};
+   CFF cf3{f2, f1};
+   std::cout << std::hexfloat << cf1 << ' ' << cf2 << std::endl;
+   CFF cd1{d1,d2};
+   CFF cd2{d1,-d2};
+   CFF cd3{d2, d1};
+   std::cout << std::hexfloat << cd1 << ' ' << cd2 << std::endl;
+   std::cout << std::hexfloat << abs(cd1) << ' ' << abs(cd2) << std::endl;
+
+   std::cout << std::hexfloat << cf1*cf2 << ' ' << cd1*cd2 << std::endl;
+   std::cout << std::hexfloat << cf1*cf3 << ' ' << cd1*cd3 << std::endl;
+}
+
 
   return 0;
 }
