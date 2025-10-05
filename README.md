@@ -43,3 +43,9 @@ More precise algoritms can be selected by defining macro "*TWOFLOAT_PRECISE_SUM*
 
 Please refer to table 1 in Ref 1 for details about precision and "latency" of the algorithms.
 
+### Degubbing aids
+Sometimes the results are not those expected, in particular when using TwoFloat in an external software package. This is usually due to implicit assumptions that the type is a C++ floating point even with a IEEE754 format.
+
+Compiling with *"-DTWOFLOAT_EXPLICIT"* and *"-Wdouble-promotion"* should already help in detecting all cases of conversions and promotions some of which maybe problematic.
+
+TWoFloat declare also two functions: void "*trapTwoFloat(float h, float l)*" and similar for double that are called by all contructors and assign operators if the macro "*TWOFLOAT_TRAP*" is defined. The functions can be defined in the user application to detect problematic occurrencies (such as NaN) and used to set a brackpoint in gdb to identify thier origin.
