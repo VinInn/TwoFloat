@@ -44,7 +44,7 @@ More precise algoritms can be selected by defining macro "*TWOFLOAT_PRECISE_SUM*
 Please refer to table 1 in Ref 1 for details about precision and "latency" of the algorithms.
 
 ### Degubbing aids
-Sometimes the results are not those expected, in particular when using TwoFloat in an external software package. This is usually due to implicit assumptions that the type is a C++ floating point even with a IEEE754 format.
+Sometimes the results are not those expected, in particular when using TwoFloat in an external software package. This is usually due to implicit assumptions that the type is a C++ floating point (with a IEEE754 format). Missing speciazations are of course a major issue. 
 
 Compiling with *"-DTWOFLOAT_EXPLICIT"* and *"-Wdouble-promotion"* should already help in detecting all cases of conversions and promotions some of which maybe problematic.
 
