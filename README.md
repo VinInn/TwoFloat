@@ -23,6 +23,8 @@ The file consists in four sections:
 3. A set of operators implementing the 4 arithmetic operations and comparisons
 4. A small set of elementary functions plus some utilities
 
+"numeric_limits" specializations are defined in the file *TwoFloatLimits.h* included by *TwoFloat.h*.
+
 ### Usage
 
 The TwoFloat class is designed to be a seamless drop-in replacement for float-types in any code, included templated libraries such as Eigen.
