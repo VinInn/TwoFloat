@@ -1,10 +1,10 @@
 #pragma once
+#include "TwoFloat.h"
 
-
-// conversions
 
 template <typename M1, typename M2>
-void convert2DW(M1 const & src, M2 & dst) {
+TWOFLOAT_INLINE
+void convertToDW(M1 const & src, M2 & dst) {
   using F = decltype(dst(0,0));
   for (unsigned int i = 0; i < src.rows(); ++i)
     for (unsigned int j = 0; j < src.cols(); ++j)
@@ -18,6 +18,7 @@ void convert2DW(M1 const & src, M2 & dst) {
 }
 
 template <typename M1, typename M2>
+TWOFLOAT_INLINE
 void convertFromDW(M1 const & src, M2 & dst) {
   for (unsigned int i = 0; i < src.rows(); ++i)
     for (unsigned int j = 0; j < src.cols(); ++j)  dst(i,j) = toDouble(src(i,j));
@@ -26,11 +27,10 @@ void convertFromDW(M1 const & src, M2 & dst) {
 
 
   template<typename V>
-  __host__ __device__
-  inline constexpr
+  TWOFLOAT_INLINE
   auto squaredNorm(V const & v) {
-#ifdef TWOFLOAT_SN
-     return squaredNorm(std::begin(v.reshaped(),std::end(v.reshaped()));
+#ifndef NO_TWOFLOAT_SN
+     return squaredNorm(std::begin(v.reshaped()),std::end(v.reshaped()));
 #else
     return v.squaredNorm();
 #endif
@@ -38,11 +38,10 @@ void convertFromDW(M1 const & src, M2 & dst) {
 
 
   template<typename V>
-  __host__ __device__
-  inline constexpr
+  TWOFLOAT_INLINE
   auto norm(V const & src) {
-#ifdef TWOFLOAT_SN
-     return sqrt(squaredNorm(std::begin(v.reshaped(),std::end(v.reshaped());
+#ifndef NO_TWOFLOAT_SN
+     return sqrt(squaredNorm(std::begin(v.reshaped()),std::end(v.reshaped())));
 #else
     return v.norm();
 #endif
