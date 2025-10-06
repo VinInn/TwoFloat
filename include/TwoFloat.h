@@ -571,9 +571,6 @@ using namespace detailsTwoFloat;
 
 /*
 template<typename T>
-#ifdef __NVCC__
-     __device__ __host__
-#endif
 TWOFLOAT_INLINE TwoFloat<T> square2(TwoFloat<T> const & a) {
   return square(a);
 }
@@ -680,16 +677,16 @@ TWOFLOAT_INLINE TwoFloat<T> rsqrt(TwoFloat<T> const & a) {
 
 
 //  Algorithm 10 from https://hal.science/hal-03482567
-template<typename V>
-TWOFLOAT_INLINE auto squaredNorm(V const  & v, int n) -> typename std::remove_cvref<decltype(v[0])>::type {
-   using TT = typename std::remove_cvref<decltype(v[0])>::type;
+template<typename VI>
+TWOFLOAT_INLINE auto squaredNorm(VI b, VI e) -> typename std::remove_cvref<decltype(*b)>::type {
+   using TT = typename std::remove_cvref<decltype(*b)>::type;
    using namespace detailsTwoFloat;
-   TT a0 = square(v[0]); 
-   TT a1 = square(v[1]);
+   TT a0 = square(*b++); 
+   TT a1 = square(*b++);
    TT  sum{a0.hi(),a1.hi(),fromSum()};
    auto s = a0.lo()+a1.lo();
-   for (int  i=2; i<n; ++i) {
-      TT const & a = square(v[i]);
+   for (VI p=b; p!=e; ++p) {
+      TT const & a = square(*p);
       sum += a.hi();
       s += a.lo(); 
    }
@@ -697,18 +694,18 @@ TWOFLOAT_INLINE auto squaredNorm(V const  & v, int n) -> typename std::remove_cv
 } 
 
 
-template<typename V>
-TWOFLOAT_INLINE auto squaredNorm2(V const  & v, int n) -> TwoFloat<typename std::remove_cvref<decltype(v[0])>::type> {
-   using T = typename std::remove_cvref<decltype(v[0])>::type;
-   using TT = TwoFloat<typename std::remove_cvref<decltype(v[0])>::type>;
+template<typename VI>
+TWOFLOAT_INLINE auto squaredNorm2(VI b, VI e) -> TwoFloat<typename std::remove_cvref<decltype(*b)>::type> {
+   using T = typename std::remove_cvref<decltype(*b)>::type;
+   using TT = TwoFloat<T>;
    static_assert(std::is_floating_point_v<T>);
    using namespace detailsTwoFloat;
-   TT a0 = square2(v[0]);
-   TT a1 = square2(v[1]);
+   TT a0 = square2(*b++);
+   TT a1 = square2(*b++);
    TT  sum{a0.hi(),a1.hi(),fromSum()};
    auto s = a0.lo()+a1.lo();
-   for (int  i=2; i<n; ++i) {
-      TT const & a = square2(v[i]);
+   for (VI p=b; p!=e; ++p) {
+      TT const & a = square2(*p);
       sum += a.hi();
       s += a.lo();
    }
