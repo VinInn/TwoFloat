@@ -46,3 +46,15 @@ void convertFromDW(M1 const & src, M2 & dst) {
     return v.norm();
 #endif
   }
+
+
+  template<typename V>
+  TWOFLOAT_INLINE
+  auto invnorm(V const & src) {
+#ifndef NO_TWOFLOAT_SN
+     return rsqrt(squaredNorm(std::begin(v.reshaped()),std::end(v.reshaped())));
+#else
+    using F = typename V::SCALAR;
+    return F(1.)/v.norm();
+#endif
+  }
