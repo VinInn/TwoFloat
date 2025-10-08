@@ -3,12 +3,14 @@
 #include <concepts>
 #include <type_traits>
 #include <algorithm>
-#include<cassert>
-#include<ostream>
+#include <cassert>
+#include <ostream>
+#include <cstdint>
 #if defined(__x86_64__)
 #include <x86intrin.h>
 #if !defined(__CUDA_ARCH__)
 constexpr bool onX86 = true;
+#define USE_FP128
 #else
 constexpr bool onX86 = false;
 #endif
@@ -133,7 +135,7 @@ TWOFLOAT_INLINE void s_div(T& hi, T& lo, T ah, T al, T b) {
   hi = t;
 }
 
-   enum class From { members, fastsum, sum, prod, div, fdouble };
+   enum class From { members, fastsum, sum, prod, div, fdouble, fint };
 
    template<From from>
    struct Tag {
@@ -147,6 +149,31 @@ TWOFLOAT_INLINE void s_div(T& hi, T& lo, T ah, T al, T b) {
    constexpr auto fromProd()  { return Tag<From::prod>();}
    constexpr auto fromDiv()  { return Tag<From::div>();}
    constexpr auto fromDouble()  { return Tag<From::fdouble>();}
+   constexpr auto fromInt()  { return Tag<From::fint>();}
+
+
+   template<std::floating_point F> struct Traits{};
+
+   template<> struct Traits<float> {
+     using Int = int32_t;
+     using Uint = uint32_t;
+     using Float = float;
+     using Double = double;   
+     TWOFLOAT_INLINE static Int midInt() { return 1<<24;} 
+   };
+
+
+   template<> struct Traits<double> {
+     using Int = int64_t;
+     using Uint = uint64_t;
+     using Float = double;
+#ifdef USE_FP128
+     using Double = __float128;
+#else
+     using Double = double;
+#endif
+     TWOFLOAT_INLINE static Int midInt() { return Int(1)<<54;}
+   };
 
 }
 
@@ -154,6 +181,11 @@ TWOFLOAT_INLINE void s_div(T& hi, T& lo, T ah, T al, T b) {
 template<typename T>
 class TwoFloat {
 public:
+
+  using Float = T;
+  using Traits = detailsTwoFloat::Traits<T>;
+  using Int = typename Traits::Int;
+  using Double = typename Traits::Double;
 
 TWOFLOAT_INLINE void trap() const {
 #ifdef TWOFLOAT_TRAP
@@ -185,7 +217,11 @@ TWOFLOAT_INLINE void trap() const {
 
   template<std::floating_point D, detailsTwoFloat::From f, 
            typename = typename std::enable_if_t<detailsTwoFloat::Tag<f>::value()==detailsTwoFloat::From::fdouble>>
-  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-double(mhi)) { trap();}
+  TWOFLOAT_INLINE TwoFloat(D a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-Double(mhi)) { trap();}
+
+  template<std::integral I, detailsTwoFloat::From f,
+           typename = typename std::enable_if_t<detailsTwoFloat::Tag<f>::value()==detailsTwoFloat::From::fint>>
+  TWOFLOAT_INLINE TwoFloat(I a, detailsTwoFloat::Tag<f>) : mhi(a), mlo(a-Int(mhi)) { trap();}
 
   template<detailsTwoFloat::From f>
   TWOFLOAT_INLINE TwoFloat(T a, T b, detailsTwoFloat::Tag<f>) {
@@ -371,21 +407,32 @@ template<std::floating_point T>
 TWOFLOAT_INLINE T toSingle(T a) { return a;}
 
 template<std::floating_point T>
-TWOFLOAT_INLINE double toDouble(T a) { return a;}
+TWOFLOAT_INLINE 
+typename detailsTwoFloat::Traits<T>::Double toDouble(T a) { return a;}
 
-
-/*
-template<>
-TWOFLOAT_INLINE __float128  toSingle<__float128>(__float128 a) { return a;}
-*/
+template<std::floating_point T>
+TWOFLOAT_INLINE 
+typename detailsTwoFloat::Traits<T>::Int toInt(T a) { return a;}
 
 
 template<typename T>
 TWOFLOAT_INLINE T toSingle(TwoFloat<T> const & a) { return a.hi();}
 
 template<typename T>
-TWOFLOAT_INLINE double toDouble(TwoFloat<T> const & a) { return double(a.hi())+double(a.lo());}
+TWOFLOAT_INLINE 
+typename TwoFloat<T>::Double toDouble(TwoFloat<T> const & a) { 
+  using Double = typename TwoFloat<T>::Double;
+  return Double(a.hi())+Double(a.lo());
+}
 
+template<typename T>
+TWOFLOAT_INLINE
+typename TwoFloat<T>::Int toInt(TwoFloat<T> const & a) {
+  using Int = typename TwoFloat<T>::Int;
+  return Int(a.hi())+Int(a.lo());
+}
+
+// ToDo  not easy to template or disambiguate
 TWOFLOAT_INLINE TwoFloat<float> fromDouble(double a) { return {a,detailsTwoFloat::fromDouble()};}
 
 

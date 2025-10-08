@@ -67,13 +67,15 @@ int main() {
     std::cout <<"conversions ok"<< std::endl;
     FF q = sqrt(3.); std::cout << q << ' ' << toDouble(q)-sqrt(3.) << std::endl;
     FF qd(sqrt(3.),fromDouble()); std::cout << qd << ' ' << toDouble(qd)-sqrt(3.) << std::endl;
-    q+= 1.e-8; std::cout << q << std::endl;;
+    FF qi(1234567890,fromInt()); std::cout << std::defaultfloat << qi << ' ' << toInt(qi)-1234567890 << std::endl;
+    q+= 1.e-8; std::cout << std::hexfloat << q << std::endl;;
     q+=1; std::cout << q << std::endl;
     q-=1; std::cout << q << std::endl;
     q*=2; std::cout << q << std::endl;
     q/=2; std::cout << q << std::endl;
     { auto w = q + 1.f; std::cout << w << std::endl;}
-    {double ww = toDouble(q); std::cout << ww << std::endl;}
+    {auto ww = toDouble(q); std::cout << ww << std::endl;}
+    {auto ww = toInt(q); std::cout << ww << std::endl;}
 #ifdef TEST_INVALID
     std::cout <<"conversions problematic"<< std::endl;
     { auto w = q + 1.; std::cout << w << std::endl;}
