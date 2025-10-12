@@ -41,7 +41,7 @@ Conversion can be forced to be explicit defining the macro *"TWOFLOAT_EXPLICIT"*
 By default Sum is implemented using Algo 5 from Ref 1 (aka SloppySum), Multiplication by Algo 11 and Division by Algo 17.
 
 More precise algoritms can be selected by defining macro "*TWOFLOAT_PRECISE_SUM*" (Algo 6 for Sum), "*TWOFLOAT_PRECISE_MUL*" (Algo 12 for Multiplication) and
-"*TWOFLOAT_PRECISE_Div*" (Algo 18 for Division)
+"*TWOFLOAT_PRECISE_DIV*" (Algo 18 for Division)
 
 Please refer to table 1 in Ref 1 for details about precision and "latency" of the algorithms.
 
@@ -50,4 +50,9 @@ Sometimes the results are not those expected, in particular when using TwoFloat 
 
 Compiling with *"-DTWOFLOAT_EXPLICIT"* and *"-Wdouble-promotion"* should already help in detecting all cases of conversions and promotions some of which maybe problematic.
 
-TWoFloat declare also two functions: void "*trapTwoFloat(float h, float l)*" and similar for double that are called by all contructors and assign operators if the macro "*TWOFLOAT_TRAP*" is defined. The functions can be defined in the user application to detect problematic occurrencies (such as NaN) and used to set a brackpoint in gdb to identify thier origin.
+TwoFloat declare also two functions: void "*trapTwoFloat(float h, float l)*" and similar for double that are called by all contructors and assign operators if the macro "*TWOFLOAT_TRAP*" is defined. The functions can be defined in the user application to detect problematic occurrencies (such as NaN) and used to set a brackpoint in gdb to identify thier origin.
+
+### Examples and tests
+Examples and tests can be found in the "tests" directory for both CPU and GPU
+
+
