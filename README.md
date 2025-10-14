@@ -40,7 +40,7 @@ Conversion can be forced to be explicit defining the macro *"TWOFLOAT_EXPLICIT"*
 
 By default Sum is implemented using Algo 5 from Ref 1 (aka SloppySum), Multiplication by Algo 11 and Division by Algo 17.
 
-More precise algoritms can be selected by defining macro "*TWOFLOAT_PRECISE_SUM*" (Algo 6 for Sum), "*TWOFLOAT_PRECISE_MUL*" (Algo 12 for Multiplication) and
+More precise algoritms can be selected by defining macro "*TWOFLOAT_PRECISE_SUM*" (Algo 6 for Sum), "*TWOFLOAT_PRECISE_MULT*" (Algo 12 for Multiplication) and
 "*TWOFLOAT_PRECISE_DIV*" (Algo 18 for Division)
 
 Please refer to table 1 in Ref 1 for details about precision and "latency" of the algorithms.
