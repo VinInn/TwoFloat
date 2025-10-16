@@ -1,5 +1,6 @@
 // c++ -std=c++20 -O3 -march=native testMatrixTT.cpp -DALL_T -I../include
 // -DTWOFLOAT_PRECISE_MULT -DTWOFLOAT_PRECISE_DIV -DTWOFLOAT_PRECISE_SUM
+// /c++ -O3 -std=c++20 -march=native tests/testMatrixTT.cpp -Iinclude -DALL_T -DDOPROB
 #include<cmath>
 #include<random>
 #include <cassert>
@@ -8,6 +9,20 @@
 #include "Matrix.h"
 #include <TwoFloat.h>
 #include<iostream>
+#include<array>
+
+// problematic matrices
+constexpr int nProb =7;
+using VA = std::array<float,15>; 
+VA prob[nProb] = {
+{0.00803683, -3.05983, 23791.8, -1.12256, -1559.84, 2071.61, -2.54266, -4669.75, -1514.62, 12813.8, -4.46718, -11275.8, -3345.82, -5650.64, 65502.2},
+{0.0130532, -0.486671, 444.793, 2.95992, 666.121, 11544.2, 2.13826, 377.561, -1656.55, 4385.63, -3.84258, -1404.56, 6916.1, 4196.78, 55888.9},
+{0.0326371, -7.51723, 22513.5, 3.3275, 3658.29, 7213.78, -3.23033, 3005.38, -0.000673902, 8213.12, -1.24941, -943.582, 12.7309, -67.2727, 587.217},
+{0.0690571, -9.37057, 14150.2, 1.51091, 1315.86, 2676.18, -0.808169, -1119.88, 1665.85, 14809.3, 1.7771, 0.000215638, -276.727, 590.528, 768.092},
+{0.282637, 19.9103, 23326.1, 1.55039, -374.328, 95.41, 30.466, -4788.99, -593.68, 41278.9, 14.2271, -2857.92, -217.75, -3429.35, 8032.11},
+{0.300253, -6.73174, 2705.04, 7.32026, -665.777, 8496.9, 2.66633, -21.0154, 4.88386e-05, 505.332, -8.54343, 79.7429, 899.055, 203.445, 7681.97},
+{0.365169, 3.90765e-06, 13478.1, -4.27523, -368.596, 3131.37, 7.47236, 751.991, 99.556, 4286.61, 1.24752, 2983.04, -2420.23, -83.2086, 20841.2},
+};
 
 #ifdef ALL_T
 #define NOP_T
@@ -80,6 +95,23 @@ void genMatrix(M& m, Eng & eng) {
 #include<iostream>
 
 template<typename T,typename TT=T>
+void goProb() {
+  std::cout << "testing " << typeid(TT).name() << std::endl;
+  MatrixSym<TT,5> m2,m3, mon, moff;
+  for (int k=0; k<nProb; ++k) {
+    MatrixSym<TT,5> m1(prob[k]);
+    for (int i=0; i<15; ++i) std::cout << toSingle(m1[i]) << ' ';std::cout << std::endl;
+    invert55(m1,m2);
+    for (int i=0; i<15; ++i) std::cout << toSingle(m2[i]) << ' ';std::cout << std::endl;
+    invert55(m2,m3);
+    for (int i=0; i<15; ++i) std::cout << toSingle(m3[i]) << ' ';std::cout << std::endl;
+    for (int i=0; i<15; ++i) std::cout << toSingle(m3[i]-m1[i]) << ' ';std::cout << std::endl;
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
+
+template<typename T,typename TT=T>
 void go(int maxIter) {
   std::cout << "testing " << typeid(TT).name() << std::endl;
   T maxOn=0;
@@ -127,6 +159,26 @@ int main() {
   using FF = TwoFloat<float>;
   using DD = TwoFloat<double>;
 
+#ifdef DOPROB
+
+#ifdef FLOAT_T
+  goProb<float>();
+#endif
+
+#ifdef DOUBLE_T
+  goProb<double>();
+#endif
+
+#ifdef FLOAT2_T
+  goProb<float,FF>();
+#endif
+
+#ifdef DOUBLE2_T
+  goProb<double,DD>();
+#endif
+
+#else
+
 #ifdef NOP_T
 {
   std::cout << "testing NOP" << std::endl;
@@ -172,6 +224,7 @@ for (int kk=0; kk<maxIter; ++kk) {
 //  go<__float128,__float128>(maxIter);
 #endif
 
+#endif
 
 
   return 0;

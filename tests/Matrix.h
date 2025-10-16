@@ -199,6 +199,11 @@ a_6 & a_7  & a_8   \end{array} \right)
 #endif
     inline constexpr MatrixSym(){}
 
+    template <typename V>
+    inline constexpr MatrixSym(V const & v){
+      for(unsigned int i=0; i<kSize; ++i) fArray[i] = v[i];
+    }
+
     typedef T  value_type;
 
 
