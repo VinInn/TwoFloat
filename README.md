@@ -50,7 +50,7 @@ Sometimes the results are not those expected, in particular when using TwoFloat 
 
 Compiling with *"-DTWOFLOAT_EXPLICIT"* and *"-Wdouble-promotion"* should already help in detecting all cases of conversions and promotions some of which maybe problematic.
 
-TwoFloat declares also two functions: void "*trapTwoFloat(float h, float l)*" and similar for double that are called by all contructors and assign operators if the macro "*TWOFLOAT_TRAP*" is defined. The functions can be defined in the user application to detect problematic occurrencies (such as NaN) and used to set a brackpoint in gdb to identify thier origin.
+TwoFloat declares also two functions: void "*trapTwoFloat(float h, float l)*" and similar for double that are called by all constructors and assign operators if the macro "*TWOFLOAT_TRAP*" is defined. The functions can be defined in the user application to detect problematic occurrencies (such as NaN) and used to set a breakpoint in gdb to identify thier origin.
 
 ### Examples and tests
 Examples and tests can be found in the "tests" directory for both CPU and GPU
