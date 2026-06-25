@@ -12,3 +12,12 @@ double ulpDiff(TwoFloat<float> a, TwoFloat<float> b) {
   return ldexp(da, 49 - e);
 }
 
+
+double ulpDiff(float a, float b) {
+  double da =a;
+  double db = b;
+  da-=db; da = std::abs(da);
+  int e;
+  frexp(db, &e);
+  return ldexp(da, 24 - e);
+}
