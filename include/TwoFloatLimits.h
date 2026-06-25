@@ -40,7 +40,7 @@ class numeric_limits <TwoFloat<float>> {
     static constexpr  bool has_quiet_NaN            = true;
     static constexpr  bool has_signaling_NaN        = true;
     static constexpr  bool is_iec559                = false;
-    static constexpr  bool has_denorm               = denorm_present;
+//    static constexpr  bool has_denorm               = denorm_present;
     static constexpr  bool tinyness_before          = false;
     static constexpr  float_round_style round_style = round_to_nearest;
 
@@ -97,7 +97,7 @@ class numeric_limits <TwoFloat<double>> {
     static constexpr  bool has_quiet_NaN            = true;
     static constexpr  bool has_signaling_NaN        = true;
     static constexpr  bool is_iec559                = false;
-    static constexpr  bool has_denorm               = denorm_present;
+//    static constexpr  bool has_denorm               = denorm_present;
     static constexpr  bool tinyness_before          = false;
     static constexpr  float_round_style round_style = round_to_nearest;
 
