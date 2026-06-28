@@ -1,5 +1,5 @@
 # TwoFloat
-An implementation of DoubleWord Arithmetic as a simple C++ templated class.
+An implementation of DoubleWord (aka Augmented) Arithmetic as a simple C++ templated class.
 
 It implements algorithms from
 
