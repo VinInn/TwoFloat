@@ -57,8 +57,9 @@ inline std::tuple<float,float> logf_P8C(float y) {
    using namespace detailsTwoFloat;
    auto [s,r] = cfma( float(0x1.00000cp0), y , cfma(float(-0x8.0003p-4),  y,  cfma(float(0x5.55087p-4), y,  cfma( float(-0x3.fedcep-4), y, cfma(float(0x3.3a1dap-4),  y, cfma(float(-0x2.cb55fp-4), y,cfma(float(0x2.38831p-4), y,{float(-0xf.e87cap-8),0} ))))))) ;
 //   return {y*(s+r),  y*r};
-//   return {y*s+y*r,  y*r};
- return {std::fma(y,s,y*r),  y*r};
+   return {y*s+y*r,  y*r};
+// return {std::fma(y,s,y*r),  y*r};
+// return {std::fma(y,r,y*s),  y*r};
 }
 #endif
 
