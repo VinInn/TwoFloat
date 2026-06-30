@@ -53,9 +53,11 @@ inline float logf_P8C(float y) {
    return c + (std::fma(y,r,-c) +  y*e);
 }
 #else
-inline float logf_P8C(float y) {
+inline std::tuple<float,float> logf_P8C(float y) {
+   using namespace detailsTwoFloat;
    auto [s,r] = cfma( float(0x1.00000cp0), y , cfma(float(-0x8.0003p-4),  y,  cfma(float(0x5.55087p-4), y,  cfma( float(-0x3.fedcep-4), y, cfma(float(0x3.3a1dap-4),  y, cfma(float(-0x2.cb55fp-4), y,cfma(float(0x2.38831p-4), y,{float(-0xf.e87cap-8),0} ))))))) ;
-   return y*s + y*r;
+//   return {y*(s+r),  y*r};
+   return {y*s+y*r,  y*r};
 }
 #endif
 
@@ -68,7 +70,7 @@ int main() {
   for (float x=0.75f; x<1.5f; x=std::nextafter(x,2.f)) {
     double d = logf_P8(double(x));
     float f = logf_P8(x);
-    float fc = logf_P8C(x);
+    auto [fc, ec] = logf_P8C(x);
     FF ff = logf_P8FF(x);
     FF ref(d,fromDouble());
     auto a = ulpDiff(f,float(d));
@@ -79,12 +81,12 @@ int main() {
     m2ff = std::max(m2ff,std::abs(b));
     m2f = std::max(m2f,std::abs(bf));
     mc = std::max(mc,std::abs(c));
-    float dm = 0.9;
+    float dm = 0.5;
     if (a>dm) nf++;
     if (b>dm) n2ff++;
     if (bf>dm) n2f++;
     if (c>dm) nc++;
-    if (bf>dm) std::cout << x << ' ' << std::hexfloat << x << ' ' << float(d) << ' ' << f << ' ' << fc << ' ' << ff.hi()+ff.lo() << std::endl << std::defaultfloat;
+    if (bf>dm) std::cout << x << ' ' << std::hexfloat << x << ' ' << d << ' ' << float(d) << ' ' << f << ' ' << fc << ' ' << fc <<','<<ec << ' ' << ff.hi()+ff.lo() << ' ' << ff << ' ' << toDouble(ff) << std::endl << std::defaultfloat;
   }
 
   std::cout << nf << ' ' << mf << ' ' << n2f << ' ' << m2f << ' ' << n2ff << ' ' << m2ff << ' ' << nc << ' ' << mc << std::endl;
